@@ -11,13 +11,13 @@ const state = {
 }
 
 const mutations = {
-  saveUserInfo(state, userInfo) {
+  saveUserInfo (state, userInfo) {
     state.userInfo = userInfo
   }
 }
 
 const actions = {
-  async getUserData() {
+  async getUserData () {
     try {
       const res = await listUserInfo()
       if (res.status === 1) {

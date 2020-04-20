@@ -25,77 +25,77 @@
 </template>
 
 <script>
-  import {login} from '@/config/getData'
-  import {mapActions, mapState} from 'vuex'
+import {login} from '@/config/getData'
+import {mapActions, mapState} from 'vuex'
 
-  export default {
-    data() {
-      return {
-        loginForm: {
-          username: '',
-          password: ''
-        },
-        rules: {
-          username: [
-            {required: true, message: '请输入用户名', trigger: 'blur'}
-          ],
-          password: [
-            {required: true, message: '请输入密码', trigger: 'blur'}
-          ]
-        },
-        showLogin: false
-      }
-    },
-    mounted() {
-      this.showLogin = true
-      if (!this.userInfo.id) {
-        this.getUserData()
-      }
-    },
-    computed: {
-      ...mapState(['userInfo'])
-    },
-    methods: {
-      ...mapActions(['getUserData']),
-      async submitForm(formName) {
-        this.$refs[formName].validate(async (valid) => {
-          if (valid) {
-            const res = await login({username: this.loginForm.username, password: this.loginForm.password})
-            if (res.status === 1) {
-              this.$message({
-                type: 'success',
-                message: '登录成功'
-              })
-              // this.$router.push('manage')
-            } else {
-              this.$message({
-                type: 'error',
-                message: res.message
-              })
-            }
-          } else {
-            this.$notify.error({
-              title: '错误',
-              message: '请输入正确的用户名密码',
-              offset: 100
+export default {
+  data () {
+    return {
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      rules: {
+        username: [
+          {required: true, message: '请输入用户名', trigger: 'blur'}
+        ],
+        password: [
+          {required: true, message: '请输入密码', trigger: 'blur'}
+        ]
+      },
+      showLogin: false
+    }
+  },
+  mounted () {
+    this.showLogin = true
+    if (!this.userInfo.id) {
+      this.getUserData()
+    }
+  },
+  computed: {
+    ...mapState(['userInfo'])
+  },
+  methods: {
+    ...mapActions(['getUserData']),
+    async submitForm (formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          const res = await login({username: this.loginForm.username, password: this.loginForm.password})
+          if (res.status === 1) {
+            this.$message({
+              type: 'success',
+              message: '登录成功'
             })
-            return false
+            // this.$router.push('manage')
+          } else {
+            this.$message({
+              type: 'error',
+              message: res.message
+            })
           }
-        })
-      }
-    },
-    watch: {
-      updateUserInfo: function (newValue) {
-        if (newValue.id) {
-          this.$message({
-            type: 'success',
-            message: '检测到您之前登录过，将自动登录'
+        } else {
+          this.$notify.error({
+            title: '错误',
+            message: '请输入正确的用户名密码',
+            offset: 100
           })
-          // this.$router.push('manage')
+          return false
         }
+      })
+    }
+  },
+  watch: {
+    updateUserInfo: function (newValue) {
+      if (newValue.id) {
+        this.$message({
+          type: 'success',
+          message: '检测到您之前登录过，将自动登录'
+        })
+        // this.$router.push('manage')
       }
     }
   }
+}
 </script>
 
 <style lang="less" scoped>
