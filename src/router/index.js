@@ -11,7 +11,7 @@ export default new Router({
       path: '/login',
       component: login
     }, {
-      path: '/article',
+      path: '/article/md',
       component: articleManagement
     }
   ]

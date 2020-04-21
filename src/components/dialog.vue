@@ -27,7 +27,7 @@ export default {
   methods: {
     openDialog () {
       this.$nextTick(() => {
-        document.getElementsByClassName('el-dialog_body')[0].scollTop = 0
+        // document.getElementsByClassName('el-dialog_body')[0].scollTop = 0
       })
     },
     closeDialog () {

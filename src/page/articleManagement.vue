@@ -2,27 +2,38 @@
   <el-container>
     <el-header>
       <el-row :gutter="20">
-        <el-col :span=3><p>文章管理</p></el-col>
-        <el-col :span=12>
+        <el-col :span=2 class="el-col-router"><router-link to="/article">文章管理</router-link></el-col>
+        <el-col :span=14>
           <el-input v-model="article.title" placeholder="输入文章标题"></el-input>
         </el-col>
-        <el-col :span=3>
-          <el-button>保存草稿</el-button>
+        <el-col :span=2>
+          <el-button @click="submit">保存草稿</el-button>
         </el-col>
-        <el-col :span=3>
+        <el-col :span=4>
           <el-button @click="publish">发布文章</el-button>
+        </el-col>
+        <el-col :span=2>
+          <el-dropdown @command="handleCommand">
+            <el-avatar class="el-dropdown-link" :size="40" :src="url" @error="errorHandler" @click="toArticle">
+            </el-avatar>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="">黄金糕</el-dropdown-item>
+              <el-dropdown-item command="">狮子头</el-dropdown-item>
+              <el-dropdown-item command="">螺蛳粉</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </el-col>
       </el-row>
     </el-header>
     <el-main id="mavonEditor">
-      <mavon-editor v-model="article.content"></mavon-editor>
+      <mavon-editor v-model="article.content" @save="submit" style="min-height: 490px"></mavon-editor>
     </el-main>
     <div>
       <zDialog title="发布文章" ref="publishArticle">
         <div slot="content">
-          <el-form ref="articleForm" :model="article" label-width="80">
+          <el-form ref="articleForm" :model="article">
             <el-form-item label="文章标签">
-              <el-input v-model="article.systemClass"></el-input>
+              <el-input v-model="article.systemClass" style="width: 50%"></el-input>
             </el-form-item>
             <el-form-item label="分类专栏">
               <el-tag
@@ -39,6 +50,7 @@
                 v-model="inputValue"
                 ref="saveTagInput"
                 size="small"
+                style="width: 50px"
                 @keyup.enter.native="handleInputConfirm"
                 @blur="handleInputConfirm"
               >
@@ -72,6 +84,7 @@
 <script>
 import zDialog from '../components/dialog'
 import http from '../util/http'
+import router from '../router'
 
 export default {
   name: 'articleManagement',
@@ -90,7 +103,8 @@ export default {
       },
       types: '',
       inputVisible: false,
-      inputValue: ''
+      inputValue: '',
+      url: ''
     }
   },
   mounted () {
@@ -103,7 +117,7 @@ export default {
       // })
     },
     handleClose (tag) {
-      this.userClass.splice(this.userClass.indexOf(tag), 1)
+      this.article.userClass.splice(this.article.userClass.indexOf(tag), 1)
     },
 
     showInput () {
@@ -113,9 +127,9 @@ export default {
       })
     },
     handleInputConfirm () {
-      let inputValue = this.inputValue
-      if (inputValue) {
-        this.userClass.push(inputValue)
+      // let inputValue = this.inputValue
+      if (this.inputValue) {
+        this.article.userClass.push(this.inputValue)
       }
       this.inputVisible = false
       this.inputValue = ''
@@ -127,6 +141,16 @@ export default {
     },
     publish () {
       this.$refs.publishArticle.dialogVisible = true
+    },
+    errorHandler () {
+      this.url = 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+    },
+    mdMenu () {
+    },
+    toArticle () {
+      router.push({ path: '/home' })
+    },
+    handleCommand (command) {
     }
   }
 }
@@ -136,8 +160,22 @@ export default {
   .el-row {
     margin-bottom: 10px;
   }
-
-  p {
-    margin-top: 4px;
+  a {
+    text-decoration: none;
+    font-size: 20px;
+    color: #555555;
   }
+  .el-col-router {
+    padding-top: 5px;
+  }
+  .el-dropdown-link {
+    cursor: pointer;
+  }
+  el-dropdown-item {
+    width: 90px;
+  }
+  /*.router-link-active {*/
+  /*  text-decoration: none;*/
+  /*}*/
+
 </style>
