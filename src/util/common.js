@@ -9,6 +9,6 @@ export default {
     loadInstance = Loading.service({fullscreen: true})
   },
   closeLoading () {
-    loadInstance.close
+    loadInstance.close()
   }
 }

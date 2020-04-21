@@ -3,7 +3,7 @@
     <el-header>
       <el-row :gutter="20">
         <el-col :span=2 class="el-col-router"><router-link to="/article">文章管理</router-link></el-col>
-        <el-col :span=14>
+        <el-col :span=13>
           <el-input v-model="article.title" placeholder="输入文章标题"></el-input>
         </el-col>
         <el-col :span=2>
@@ -12,11 +12,11 @@
         <el-col :span=4>
           <el-button @click="publish">发布文章</el-button>
         </el-col>
-        <el-col :span=2>
+        <el-col :span=3>
           <el-dropdown @command="handleCommand">
             <el-avatar class="el-dropdown-link" :size="40" :src="url" @error="errorHandler" @click="toArticle">
             </el-avatar>
-            <el-dropdown-menu slot="dropdown">
+            <el-dropdown-menu slot="dropdown" class="article-md-menu" placement="bottom-start">
               <el-dropdown-item command="">黄金糕</el-dropdown-item>
               <el-dropdown-item command="">狮子头</el-dropdown-item>
               <el-dropdown-item command="">螺蛳粉</el-dropdown-item>
@@ -127,7 +127,6 @@ export default {
       })
     },
     handleInputConfirm () {
-      // let inputValue = this.inputValue
       if (this.inputValue) {
         this.article.userClass.push(this.inputValue)
       }
@@ -170,12 +169,10 @@ export default {
   }
   .el-dropdown-link {
     cursor: pointer;
+    position: relative;
+    left: 20px
   }
-  el-dropdown-item {
-    width: 90px;
+  .el-dropdown {
+    width: 80px;
   }
-  /*.router-link-active {*/
-  /*  text-decoration: none;*/
-  /*}*/
-
 </style>
