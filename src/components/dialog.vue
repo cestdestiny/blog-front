@@ -14,6 +14,7 @@
 
 <script>
 export default {
+  name: 'zDialog',
   props: {
     title: String,
     size: String,
