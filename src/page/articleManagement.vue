@@ -75,7 +75,7 @@
           </el-form>
         </div>
         <div slot="footer">
-            <el-button type="primary" @click="submit()">发布文章</el-button>
+            <el-button type="primary" @click="submit">发布文章</el-button>
         </div>
       </zDialog>
     </div>
