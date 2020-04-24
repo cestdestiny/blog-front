@@ -31,22 +31,23 @@ export default {
         (response) => {
           if (!response.data) {
             console.log('调用服务失败')
+            common.commonMessage('调用服务失败', 'error')
             return
-            // todo 添加提示框
           }
-          if (response.data.status === 1) {
-            // todo 返回成功数据待处理
-            if (callback) {
-              // todo 回调函数处理
-            }
+          if (response.data.code === 1) {
+            return response.data
+            // if (callback) {
+            //   // todo 回调函数处理
+            // }
           } else {
-            // todo 返回失败数据待处理
+            common.commonMessage(response.data.message, 'error')
           }
         }
       ).catch(
         // eslint-disable-next-line handle-callback-err
         (error) => {
           console.log('请求失败')
+          common.commonMessage('请求失败', 'error')
         }
       )
     })

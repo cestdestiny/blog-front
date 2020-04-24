@@ -84,7 +84,9 @@
 <script>
 import zDialog from '../components/dialog'
 import http from '../util/http'
+import common from '../util/common'
 import router from '../router'
+import defaultPhoto from '@/assets/img/defaultProfilePhoto.jpg'
 
 export default {
   name: 'articleManagement',
@@ -101,7 +103,10 @@ export default {
         type: '', // 文章类型
         publishType: '' // 发布形式
       },
-      types: '',
+      types: {
+        id: '',
+        category: ''
+      },
       inputVisible: false,
       inputValue: '',
       url: ''
@@ -112,9 +117,9 @@ export default {
   },
   methods: {
     loadArticleType () {
-      // http.request('/article/type', 'GET', null, (response) => {
-      //   this.$data.types = response.data
-      // })
+      http.request('/article/category/3', 'GET', null, (response) => {
+        this.types = response.data
+      })
     },
     handleClose (tag) {
       this.article.userClass.splice(this.article.userClass.indexOf(tag), 1)
@@ -134,15 +139,25 @@ export default {
       this.inputValue = ''
     },
     submit () {
-      http.request('/article/save', 'POST', null, (response) => {
-        console.log('保存成功')
+      if (this.article.title === '') {
+        common.commonMessage('标题不能为空！', 'warning')
+        return
+      }
+      if (this.article.content === '') {
+        common.commonMessage('内容不能为空！', 'warning')
+        return
+      }
+      http.request('/article', 'POST', this.article, (response) => {
+        common.commonMessage(response.message, 'success')
+        console.log(response.message)
       })
     },
     publish () {
       this.$refs.publishArticle.dialogVisible = true
     },
+
     errorHandler () {
-      this.url = 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+      this.url = defaultPhoto
     },
     mdMenu () {
     },
