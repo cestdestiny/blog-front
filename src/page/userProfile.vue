@@ -75,7 +75,7 @@ export default {
     },
     submitAvatar () {
       http.request('/user/id', 'POST', this.user, () => {
-        // todo 弹出提示框
+        common.commonMessage('修改成功')
       })
       this.$refs.updateAvatar.dialogVisible = false
     }

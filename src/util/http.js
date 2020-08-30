@@ -10,7 +10,7 @@ axios.interceptors.request.use(config => {
 })
 
 axios.interceptors.response.use(response => {
-  common.showLoading()
+  common.closeLoading()
   return response
 }, error => {
   common.closeLoading()
@@ -29,16 +29,19 @@ export default {
         headers: {'Content-Type': 'application/json;charset: utf-8'}
       }).then(
         (response) => {
+          if (!response.status.toString().startsWith('2')) {
+            common.commonMessage(response.data.message, 'error')
+            return
+          }
           if (!response.data) {
             console.log('调用服务失败')
             common.commonMessage('调用服务失败', 'error')
             return
           }
-          if (response.data.code === 1) {
-            return response.data
-            // if (callback) {
-            //   // todo 回调函数处理
-            // }
+          if (response.data.code === '1') {
+            if (callback) {
+              callback(response.data)
+            }
           } else {
             common.commonMessage(response.data.message, 'error')
           }

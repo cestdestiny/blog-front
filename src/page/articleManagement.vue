@@ -33,9 +33,34 @@
         <div slot="content">
           <el-form ref="articleForm" :model="article">
             <el-form-item label="文章标签">
-              <el-input v-model="article.systemClass" style="width: 50%"></el-input>
+              <el-tag
+                :key="tag"
+                v-for="tag in article.systemClass"
+                closable
+                :disable-transitions="false"
+                @close="handleClose(tag)">
+                {{tag}}
+              </el-tag>
+              <el-button size="small" @click="insertArticleTag">添加文章标签</el-button>
+              <el-card class="articleTag" style="display: none"  ref="articleTag">
+                <div slot="header">
+                  <span>文章标签</span>
+                </div>
+                <div>
+                  <el-row :gutter="20">
+                    <el-col :span="6" v-for="type in systemType" :key="systemType.id">
+                      <el-checkbox-group
+                        v-model="article.systemClass"
+                        :min="0"
+                        :max="3">
+                        <el-checkbox :label="systemType.category" :key="systemType.id">{{systemType.category}}</el-checkbox>
+                      </el-checkbox-group>
+                    </el-col>
+                  </el-row>
+                </div>
+              </el-card>
             </el-form-item>
-            <el-form-item label="分类专栏">
+            <el-form-item label="自定义分类">
               <el-tag
                 :key="tag"
                 v-for="tag in article.userClass"
@@ -55,19 +80,36 @@
                 @blur="handleInputConfirm"
               >
               </el-input>
-              <el-button v-else class="button-new-tag" size="small" @click="showInput">新建分类专栏</el-button>
+              <el-button v-else class="button-new-tag" size="small" @click="showInput">新建自定义分类</el-button>
+              <el-card class="box-card">
+                <div slot="header">
+                  <span>自定义分类</span>
+                </div>
+                <div>
+                  <el-row :gutter="20">
+                    <el-col :span="6" v-for="customCategory in customCategories" :key="customCategory.id">
+                      <el-checkbox-group
+                        v-model="article.userClass"
+                        :min="0"
+                        :max="3">
+                        <el-checkbox :label="customCategory.category" :key="customCategory.id">{{customCategory.category}}</el-checkbox>
+                      </el-checkbox-group>
+                    </el-col>
+                  </el-row>
+                </div>
+              </el-card>
             </el-form-item>
             <el-form-item label="文章类型">
               <el-select v-model="article.type" placeholder="请选择">
                 <el-option v-for="item in types"
                            :key="item.id"
-                           :value="item.category"
+                           :value="item.id"
                            :label="item.category">
                 </el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="发布形式">
-              <el-radio-group v-model="article.publishType">
+              <el-radio-group v-model="publishType">
                 <el-radio label="公开"></el-radio>
                 <el-radio label="私密"></el-radio>
               </el-radio-group>
@@ -98,27 +140,40 @@ export default {
       article: {
         content: '',
         title: '',
-        systemClass: '', // 文章标签
+        systemClass: [], // 文章标签
         userClass: [], // 分类专栏
         type: '', // 文章类型
         publishType: '' // 发布形式
       },
-      types: {
-        id: '',
-        category: ''
-      },
+      customCategories: [],
+      types: [],
+      systemType: [],
       inputVisible: false,
       inputValue: '',
-      url: ''
+      url: '',
+      publishType: '公开'
     }
   },
   mounted () {
     this.loadArticleType()
+    // TODO 获取用户id 后续优化
+    this.loadCustomCategory(15)
+    this.loadSystemType()
   },
   methods: {
+    loadSystemType () {
+      http.request('/article/category/1', 'GET', null, (response) => {
+        this.systemType = response.data
+      })
+    },
     loadArticleType () {
       http.request('/article/category/3', 'GET', null, (response) => {
         this.types = response.data
+      })
+    },
+    loadCustomCategory (userId) {
+      http.request('/article/customCategory/' + userId, 'GET', null, (response) => {
+        this.customCategories = response.data
       })
     },
     handleClose (tag) {
@@ -126,6 +181,10 @@ export default {
     },
 
     showInput () {
+      if (this.article.userClass.length >= 3) {
+        common.commonMessage('自定义分类最多三个！', 'warning')
+        return
+      }
       this.inputVisible = true
       this.$nextTick(() => {
         this.$refs.saveTagInput.$refs.input.focus()
@@ -133,12 +192,32 @@ export default {
     },
     handleInputConfirm () {
       if (this.inputValue) {
+        this.article.userClass.forEach((val) => {
+          if (val === this.inputValue) {
+            common.commonMessage('该分类已存在！', 'warning')
+            // eslint-disable-next-line
+            return
+          }
+        })
         this.article.userClass.push(this.inputValue)
       }
       this.inputVisible = false
       this.inputValue = ''
     },
     submit () {
+      if (this.publishType === '公开') {
+        this.article.publishType = 1
+      } else {
+        this.article.publishType = 2
+      }
+      http.request('/article', 'POST', this.article, (response) => {
+        common.commonMessage(response.message, 'success')
+      })
+    },
+    insertArticleTag () {
+      this.$refs.articleTag.
+    },
+    publish () {
       if (this.article.title === '') {
         common.commonMessage('标题不能为空！', 'warning')
         return
@@ -147,12 +226,6 @@ export default {
         common.commonMessage('内容不能为空！', 'warning')
         return
       }
-      http.request('/article', 'POST', this.article, (response) => {
-        common.commonMessage(response.message, 'success')
-        console.log(response.message)
-      })
-    },
-    publish () {
       this.$refs.publishArticle.dialogVisible = true
     },
 
